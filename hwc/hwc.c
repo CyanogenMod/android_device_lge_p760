@@ -22,8 +22,10 @@
 #include <poll.h>
 #include <sys/ioctl.h>
 #include <linux/fb.h>
+#include <linux/omapfb.h>
 #include <sys/mman.h>
 #include <stdbool.h>
+#include <sys/resource.h>
 
 #include <cutils/properties.h>
 #include <cutils/log.h>
@@ -31,7 +33,6 @@
 #include <hardware/hardware.h>
 #include <hardware/hwcomposer.h>
 #include <EGL/egl.h>
-#include <utils/Timers.h>
 #include <hardware_legacy/uevent.h>
 #include <png.h>
 
@@ -45,11 +46,9 @@
 #define MAX_BLIT_OPS RGZ_MAXLAYERS * RGZ_SUBREGIONMAX
 #define MAX_HWC_LAYERS 32
 
-#define ASPECT_RATIO_TOLERANCE 0.02f
+#include <system/graphics.h>
 
-#ifndef FBIO_WAITFORVSYNC
-#define FBIO_WAITFORVSYNC       _IOW('F', 0x20, __u32)
-#endif
+#define ASPECT_RATIO_TOLERANCE 0.02f
 
 #define min(a, b) ( { typeof(a) __a = (a), __b = (b); __a < __b ? __a : __b; } )
 #define max(a, b) ( { typeof(a) __a = (a), __b = (b); __a > __b ? __a : __b; } )
@@ -2185,26 +2184,45 @@ static void handle_hotplug(omap4_hwc_device_t *hwc_dev)
             hwc_dev->procs->invalidate(hwc_dev->procs);
 }
 
-static void handle_uevents(omap4_hwc_device_t *hwc_dev, const char *s)
+static void handle_uevents(omap4_hwc_device_t *hwc_dev, const char *buff, int len)
 {
-    int dock = !strcmp(s, "change@/devices/virtual/switch/dock");
-    if (!dock &&
-        strcmp(s, "change@/devices/virtual/switch/hdmi"))
-        return;
+    int dock;
+    int hdmi;
+    int vsync;
+    int state = 0;
+    uint64_t timestamp = 0;
+    const char *s = buff;
+
+    dock = !strcmp(s, "change@/devices/virtual/switch/dock");
+    hdmi = !strcmp(s, "change@/devices/virtual/switch/hdmi");
+    vsync = !strcmp(s, "change@/devices/virtual/switch/omapfb-vsync");
+
+    if (!dock && !vsync && !hdmi)
+       return;
 
     s += strlen(s) + 1;
 
     while(*s) {
-        if (!strncmp(s, "SWITCH_STATE=", strlen("SWITCH_STATE="))) {
-            int state = atoi(s + strlen("SWITCH_STATE="));
-            if (dock)
-                hwc_dev->ext.force_dock = state == 1;
-            else
-                hwc_dev->ext.hdmi_state = state == 1;
-            handle_hotplug(hwc_dev);
-        }
+        if (!strncmp(s, "SWITCH_STATE=", strlen("SWITCH_STATE=")))
+            state = atoi(s + strlen("SWITCH_STATE="));
+        else if (!strncmp(s, "SWITCH_TIME=", strlen("SWITCH_TIME=")))
+            timestamp = strtoull(s + strlen("SWITCH_TIME="), NULL, 0);
 
         s += strlen(s) + 1;
+        if (s - buff >= len)
+            break;
+    }
+
+    if (vsync) {
+        if (hwc_dev->procs && hwc_dev->procs->vsync) {
+            hwc_dev->procs->vsync(hwc_dev->procs, 0, timestamp);
+        }
+    } else {
+        if (dock)
+            hwc_dev->ext.force_dock = state == 1;
+        else
+            hwc_dev->ext.hdmi_state = state == 1;
+        handle_hotplug(hwc_dev);
     }
 }
 
@@ -2216,6 +2234,8 @@ static void *omap4_hwc_hdmi_thread(void *data)
     int invalidate = 0;
     int timeout;
     int err;
+
+    setpriority(PRIO_PROCESS, 0, HAL_PRIORITY_URGENT_DISPLAY);
 
     uevent_init();
 
@@ -2266,8 +2286,8 @@ static void *omap4_hwc_hdmi_thread(void *data)
 
         if (fds[0].revents & POLLIN) {
             /* keep last 2 zeroes to ensure double 0 termination */
-            uevent_next_event(uevent_desc, sizeof(uevent_desc) - 2);
-            handle_uevents(hwc_dev, uevent_desc);
+            int len = uevent_next_event(uevent_desc, sizeof(uevent_desc) - 2);
+            handle_uevents(hwc_dev, uevent_desc, len);
         }
     } while (1);
 
@@ -2281,6 +2301,53 @@ static void omap4_hwc_registerProcs(struct hwc_composer_device* dev,
 
     hwc_dev->procs = (typeof(hwc_dev->procs)) procs;
 }
+
+static int omap4_hwc_query(struct hwc_composer_device* dev,
+        int what, int* value)
+{
+    omap4_hwc_device_t *hwc_dev = (omap4_hwc_device_t *) dev;
+
+    switch (what) {
+    case HWC_BACKGROUND_LAYER_SUPPORTED:
+        // we don't support the background layer yet
+        value[0] = 0;
+        break;
+    case HWC_VSYNC_PERIOD:
+        // vsync period in nanosecond
+        value[0] = 1000000000.0 / hwc_dev->fb_dev->base.fps;
+        break;
+    default:
+        // unsupported query
+        return -EINVAL;
+    }
+    return 0;
+}
+
+static int omap4_hwc_event_control(struct hwc_composer_device* dev,
+        int event, int enabled)
+{
+    omap4_hwc_device_t *hwc_dev = (omap4_hwc_device_t *) dev;
+
+    switch (event) {
+    case HWC_EVENT_VSYNC:
+    {
+        int val = !!enabled;
+        int err;
+
+        err = ioctl(hwc_dev->fb_fd, OMAPFB_ENABLEVSYNC, &val);
+        if (err < 0)
+            return -errno;
+
+        return 0;
+    }
+    default:
+        return -EINVAL;
+    }
+}
+
+struct hwc_methods omap4_hwc_methods = {
+    .eventControl = &omap4_hwc_event_control,
+};
 
 static int omap4_hwc_device_open(const hw_module_t* module, const char* name,
                 hw_device_t** device)
@@ -2312,13 +2379,15 @@ static int omap4_hwc_device_open(const hw_module_t* module, const char* name,
     memset(hwc_dev, 0, sizeof(*hwc_dev));
 
     hwc_dev->base.common.tag = HARDWARE_DEVICE_TAG;
-    hwc_dev->base.common.version = HWC_API_VERSION;
+    hwc_dev->base.common.version = HWC_DEVICE_API_VERSION_0_3;
     hwc_dev->base.common.module = (hw_module_t *)module;
     hwc_dev->base.common.close = omap4_hwc_device_close;
     hwc_dev->base.prepare = omap4_hwc_prepare;
     hwc_dev->base.set = omap4_hwc_set;
     hwc_dev->base.dump = omap4_hwc_dump;
     hwc_dev->base.registerProcs = omap4_hwc_registerProcs;
+    hwc_dev->base.query = omap4_hwc_query;
+    hwc_dev->base.methods = &omap4_hwc_methods;
     hwc_dev->fb_dev = hwc_mod->fb_dev;
     *device = &hwc_dev->base.common;
 
@@ -2490,8 +2559,8 @@ omap4_hwc_module_t HAL_MODULE_INFO_SYM = {
     .base = {
         .common = {
             .tag =                  HARDWARE_MODULE_TAG,
-            .version_major =        1,
-            .version_minor =        0,
+            .module_api_version =   HWC_MODULE_API_VERSION_0_1,
+            .hal_api_version =      HARDWARE_HAL_API_VERSION,
             .id =                   HWC_HARDWARE_MODULE_ID,
             .name =                 "OMAP 44xx Hardware Composer HAL",
             .author =               "Texas Instruments",
