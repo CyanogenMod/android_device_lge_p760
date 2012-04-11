@@ -2195,7 +2195,8 @@ static void handle_uevents(omap4_hwc_device_t *hwc_dev, const char *buff, int le
 
     dock = !strcmp(s, "change@/devices/virtual/switch/dock");
     hdmi = !strcmp(s, "change@/devices/virtual/switch/hdmi");
-    vsync = !strcmp(s, "change@/devices/virtual/switch/omapfb-vsync");
+    vsync = !strcmp(s, "change@/devices/platform/omapfb") ||
+        !strcmp(s, "change@/devices/virtual/switch/omapfb-vsync");
 
     if (!dock && !vsync && !hdmi)
        return;
@@ -2207,6 +2208,8 @@ static void handle_uevents(omap4_hwc_device_t *hwc_dev, const char *buff, int le
             state = atoi(s + strlen("SWITCH_STATE="));
         else if (!strncmp(s, "SWITCH_TIME=", strlen("SWITCH_TIME=")))
             timestamp = strtoull(s + strlen("SWITCH_TIME="), NULL, 0);
+        else if (!strncmp(s, "VSYNC=", strlen("VSYNC=")))
+            timestamp = strtoull(s + strlen("VSYNC="), NULL, 0);
 
         s += strlen(s) + 1;
         if (s - buff >= len)
