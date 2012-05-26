@@ -2147,7 +2147,7 @@ static int set_preprocessor_echo_delay(effect_handle_t handle,
     return set_preprocessor_param(handle, param);
 }
 
-static void push_echo_reference(struct omap4_stream_in *in, size_t frames)
+static int push_echo_reference(struct omap4_stream_in *in, size_t frames)
 {
     /* read frames from echo reference buffer and update echo delay
      * in->ref_frames_in is updated with frames available in in->ref_buf */
@@ -2179,6 +2179,8 @@ static void push_echo_reference(struct omap4_stream_in *in, size_t frames)
                in->ref_buf + buf.frameCount * in->config.channels,
                in->ref_frames_in * in->config.channels * sizeof(int16_t));
     }
+    // return the number of frames written to the preprocessor in this call
+    return buf.frameCount;
 }
 
 static int get_next_buffer(struct resampler_buffer_provider *buffer_provider,
@@ -2304,6 +2306,7 @@ static ssize_t process_frames(struct omap4_stream_in *in, void* buffer, ssize_t 
     audio_buffer_t in_buf;
     audio_buffer_t out_buf;
     int i;
+    ssize_t prepro_wr_cnt;
 
     LOGFUNC("%s(%p, %p, %ld)", __FUNCTION__, in, buffer, frames);
 
@@ -2331,12 +2334,18 @@ static ssize_t process_frames(struct omap4_stream_in *in, void* buffer, ssize_t 
             in->proc_frames_in += frames_rd;
         }
 
-        if (in->echo_reference != NULL)
-            push_echo_reference(in, in->proc_frames_in);
+        /* make sure that the number of mic signal frames written to the
+         * preprocessor is the same as the number of playback signal frames
+         * sent */
+        if (in->echo_reference != NULL) {
+            prepro_wr_cnt = push_echo_reference(in, in->proc_frames_in);
+        } else {
+            prepro_wr_cnt = in->proc_frames_in;
+        }
 
-         /* in_buf.frameCount and out_buf.frameCount indicate respectively
-          * the maximum number of frames to be consumed and produced by process() */
-        in_buf.frameCount = in->proc_frames_in;
+        /* in_buf.frameCount and out_buf.frameCount indicate respectively the
+         * maximum number of frames to be consumed and produced by process() */
+        in_buf.frameCount = prepro_wr_cnt;
         in_buf.s16 = in->proc_buf;
         out_buf.frameCount = frames - frames_wr;
         out_buf.s16 = (int16_t *)buffer + frames_wr * in->config.channels;
