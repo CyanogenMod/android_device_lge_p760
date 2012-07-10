@@ -92,6 +92,8 @@
 #define MIXER_AMIC_UL_VOLUME                "AMIC UL Volume"
 #define MIXER_AUDUL_VOICE_UL_VOLUME         "AUDUL Voice UL Volume"
 #define MIXER_DMIC1_UL_VOLUME               "DMIC1 UL Volume"
+#define MIXER_DMIC2_UL_VOLUME               "DMIC2 UL Volume"
+#define MIXER_DMIC3_UL_VOLUME               "DMIC3 UL Volume"
 #define MIXER_MUX_VX0                       "MUX_VX0"
 #define MIXER_MUX_VX1                       "MUX_VX1"
 #define MIXER_MUX_UL10                      "MUX_UL10"
@@ -571,7 +573,10 @@ struct mixer_ctls
     struct mixer_ctl *right_capture;
     struct mixer_ctl *amic_ul_volume;
     struct mixer_ctl *dmic1_ul_volume;
+    struct mixer_ctl *dmic2_ul_volume;
+    struct mixer_ctl *dmic3_ul_volume;
     struct mixer_ctl *voice_ul_volume;
+    struct mixer_ctl *bt_ul_volume;
     struct mixer_ctl *sidetone_capture;
     struct mixer_ctl *headset_volume;
     struct mixer_ctl *speaker_volume;
@@ -2714,8 +2719,44 @@ static int adev_set_mode(struct audio_hw_device *dev, int mode)
 static int adev_set_mic_mute(struct audio_hw_device *dev, bool state)
 {
     struct omap4_audio_device *adev = (struct omap4_audio_device *)dev;
+    unsigned int channel;
 
     LOGFUNC("%s(%p, %d)", __FUNCTION__, dev, state);
+
+    if (adev->mode == AUDIO_MODE_IN_CALL) {
+        for (channel = 0; channel < mixer_ctl_get_num_values(
+                adev->mixer_ctls.voice_ul_volume); channel++) {
+            mixer_ctl_set_value(adev->mixer_ctls.voice_ul_volume,
+                   channel, (state ? 0 : MIXER_ABE_GAIN_0DB));
+        }
+    }
+    else {
+        for (channel = 0; channel < mixer_ctl_get_num_values(
+                adev->mixer_ctls.amic_ul_volume); channel++) {
+            mixer_ctl_set_value(adev->mixer_ctls.amic_ul_volume,
+                   channel, (state ? 0 : MIXER_ABE_GAIN_0DB));
+        }
+        for (channel = 0; channel < mixer_ctl_get_num_values(
+                adev->mixer_ctls.dmic1_ul_volume); channel++) {
+            mixer_ctl_set_value(adev->mixer_ctls.dmic1_ul_volume,
+                   channel, (state ? 0 : MIXER_ABE_GAIN_0DB));
+        }
+        for (channel = 0; channel < mixer_ctl_get_num_values(
+                adev->mixer_ctls.dmic2_ul_volume); channel++) {
+            mixer_ctl_set_value(adev->mixer_ctls.dmic2_ul_volume,
+                   channel, (state ? 0 : MIXER_ABE_GAIN_0DB));
+        }
+        for (channel = 0; channel < mixer_ctl_get_num_values(
+                adev->mixer_ctls.dmic3_ul_volume); channel++) {
+            mixer_ctl_set_value(adev->mixer_ctls.dmic3_ul_volume,
+                   channel, (state ? 0 : MIXER_ABE_GAIN_0DB));
+        }
+        for (channel = 0; channel < mixer_ctl_get_num_values(
+                adev->mixer_ctls.bt_ul_volume); channel++) {
+            mixer_ctl_set_value(adev->mixer_ctls.bt_ul_volume,
+                   channel, (state ? 0 : DB_TO_ABE_GAIN(6)));
+        }
+    }
 
     adev->mic_mute = state;
 
@@ -2963,6 +3004,12 @@ static int adev_open(const hw_module_t* module, const char* name,
                                            MIXER_AMIC_UL_VOLUME);
     adev->mixer_ctls.dmic1_ul_volume = mixer_get_ctl_by_name(adev->mixer,
                                            MIXER_DMIC1_UL_VOLUME);
+    adev->mixer_ctls.dmic2_ul_volume = mixer_get_ctl_by_name(adev->mixer,
+                                           MIXER_DMIC2_UL_VOLUME);
+    adev->mixer_ctls.dmic3_ul_volume = mixer_get_ctl_by_name(adev->mixer,
+                                           MIXER_DMIC3_UL_VOLUME);
+    adev->mixer_ctls.bt_ul_volume = mixer_get_ctl_by_name(adev->mixer,
+                                           MIXER_BT_UL_VOLUME);
     adev->mixer_ctls.voice_ul_volume = mixer_get_ctl_by_name(adev->mixer,
                                            MIXER_AUDUL_VOICE_UL_VOLUME);
     adev->mixer_ctls.sidetone_capture = mixer_get_ctl_by_name(adev->mixer,
