@@ -1025,7 +1025,7 @@ static void select_output_device(struct omap4_audio_device *adev)
     int dl1_on;
     int fmtx_on;
     int sidetone_capture_on = 0;
-    unsigned int channel, voice_ul_volume[2];
+    unsigned int channel, voice_ul_volume[2] = {0, 0};
 
     LOGFUNC("%s(%p)", __FUNCTION__, adev);
 
