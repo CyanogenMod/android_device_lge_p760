@@ -121,7 +121,6 @@
 
 /* ALSA cards for OMAP4 */
 #define CARD_OMAP4_ABE 0
-#define CARD_OMAP4_HDMI 1
 #define CARD_OMAP4_USB 2
 #define CARD_BLAZE_DEFAULT CARD_OMAP4_ABE
 
@@ -1063,10 +1062,6 @@ static void select_output_device(struct omap4_audio_device *adev)
                     break;
                 case TTY_MODE_OFF:
                 default:
-                    /* force speaker on when in call and HDMI is selected as voice DL audio
-                     * cannot be routed to HDMI by ABE */
-                    if (adev->devices.out_devices & AUDIO_DEVICE_OUT_AUX_DIGITAL)
-                        speaker_on = 1;
                     break;
             }
         }
@@ -1119,10 +1114,6 @@ static void select_output_device(struct omap4_audio_device *adev)
                         break;
                     case TTY_MODE_OFF:
                     default:
-                        /* force speaker on when in call and HDMI is selected as voice DL audio
-                         * cannot be routed to HDMI by ABE */
-                        if (adev->devices.out_devices & AUDIO_DEVICE_OUT_AUX_DIGITAL)
-                            speaker_on = 1;
                         break;
                 }
             }
@@ -1327,11 +1318,6 @@ static int start_output_stream(struct omap4_stream_out *out)
         select_output_device(adev);
     }
 
-    /* in the case of multiple devices, this will cause use of HDMI only */
-    if(adev->devices.out_devices & AUDIO_DEVICE_OUT_AUX_DIGITAL) {
-        card = CARD_OMAP4_HDMI;
-        port = PORT_MM;
-    }
     if((adev->devices.out_devices & AUDIO_DEVICE_OUT_ANLG_DOCK_HEADSET) ||
         (adev->devices.out_devices & AUDIO_DEVICE_OUT_DGTL_DOCK_HEADSET)) {
         card = CARD_OMAP4_USB;
@@ -1636,10 +1622,6 @@ static int out_set_parameters(struct audio_stream *stream, const char *kvpairs)
                         adev->active_input->source == AUDIO_SOURCE_VOICE_COMMUNICATION) {
                     force_input_standby = true;
                 }
-                /* force standby if moving to/from HDMI */
-                if ((val & AUDIO_DEVICE_OUT_AUX_DIGITAL) ^
-                    (adev->devices.out_devices & AUDIO_DEVICE_OUT_AUX_DIGITAL))
-                        do_output_standby(out);
             }
             adev->devices.out_devices &= ~AUDIO_DEVICE_OUT_ALL;
             adev->devices.out_devices |= val;
@@ -2886,7 +2868,6 @@ static uint32_t adev_get_supported_devices(const struct audio_hw_device *dev)
             AUDIO_DEVICE_OUT_SPEAKER |
             AUDIO_DEVICE_OUT_WIRED_HEADSET |
             AUDIO_DEVICE_OUT_WIRED_HEADPHONE |
-            AUDIO_DEVICE_OUT_AUX_DIGITAL |
             AUDIO_DEVICE_OUT_ANLG_DOCK_HEADSET |
             AUDIO_DEVICE_OUT_DGTL_DOCK_HEADSET |
             AUDIO_DEVICE_OUT_ALL_SCO |
@@ -2896,7 +2877,6 @@ static uint32_t adev_get_supported_devices(const struct audio_hw_device *dev)
             AUDIO_DEVICE_IN_AMBIENT |
             AUDIO_DEVICE_IN_BUILTIN_MIC |
             AUDIO_DEVICE_IN_WIRED_HEADSET |
-            AUDIO_DEVICE_IN_AUX_DIGITAL |
             AUDIO_DEVICE_IN_BACK_MIC |
             AUDIO_DEVICE_IN_ALL_SCO |
             AUDIO_DEVICE_IN_DEFAULT);
