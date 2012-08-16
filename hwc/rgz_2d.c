@@ -94,7 +94,7 @@ struct rgz_blts {
 
 
 static int rgz_hwc_layer_blit(
-    hwc_layer_t *l, struct bvbuffdesc *dstdesc,
+    hwc_layer_1_t *l, struct bvbuffdesc *dstdesc,
     struct bvsurfgeom *dstgeom, int noblend, int buff_idx);
 static void rgz_blts_init(struct rgz_blts *blts);
 static void rgz_blts_free(struct rgz_blts *blts);
@@ -162,7 +162,7 @@ static int get_layer_ops(blit_hregion_t *hregion, int subregion, int *bottom)
         if (!empty_rect(&hregion->blitrects[l][subregion])) {
             ops++;
             *bottom = l;
-            hwc_layer_t *layer = hregion->layers[l];
+            hwc_layer_1_t *layer = hregion->layers[l];
             IMG_native_handle_t *h = (IMG_native_handle_t *)layer->handle;
             if ((layer->blending != HWC_BLENDING_PREMULT) || is_OPAQUE(h->iFormat))
                 break;
@@ -221,7 +221,7 @@ static void rgz_out_svg(rgz_t *rgz, rgz_out_params_t *params)
 }
 
 /* XXX duplicate of hwc.c version */
-static void dump_layer(hwc_layer_t const* l, int iserr)
+static void dump_layer(hwc_layer_1_t const* l, int iserr)
 {
 #define FMT(f) ((f) == HAL_PIXEL_FORMAT_TI_NV12 ? "NV12" : \
                 (f) == HAL_PIXEL_FORMAT_BGRX_8888 ? "xRGB32" : \
@@ -249,11 +249,11 @@ static void dump_layer(hwc_layer_t const* l, int iserr)
     }
 }
 
-static void dump_all(hwc_layer_t *layers, unsigned int layerno, unsigned int errlayer)
+static void dump_all(hwc_layer_1_t *layers, unsigned int layerno, unsigned int errlayer)
 {
     unsigned int i;
     for (i = 0; i < layerno; i++) {
-        hwc_layer_t *l = &layers[i];
+        hwc_layer_1_t *l = &layers[i];
         OUTE("Layer %d", i);
         dump_layer(l, errlayer == i);
     }
@@ -268,7 +268,7 @@ static int rgz_out_bvdirect_paint(rgz_t *rgz, rgz_out_params_t *params)
     rgz_blts_init(&blts);
 
     for (i = 0; i < rgz->layerno; i++) {
-        hwc_layer_t *l = &rgz->layers[i];
+        hwc_layer_1_t *l = &rgz->layers[i];
         if (l->compositionType != HWC_OVERLAY)
             continue;
 
@@ -360,7 +360,7 @@ static int rgz_out_bvcmd_paint(rgz_t *rgz, rgz_out_params_t *params)
     }
 
     for (i = 0; i < rgz->layerno; i++) {
-        hwc_layer_t *l = &rgz->layers[i];
+        hwc_layer_1_t *l = &rgz->layers[i];
         if (l->compositionType != HWC_OVERLAY)
             continue;
 
@@ -383,7 +383,7 @@ static int rgz_out_bvcmd_paint(rgz_t *rgz, rgz_out_params_t *params)
     return rv;
 }
 
-static float getscalew(hwc_layer_t *layer)
+static float getscalew(hwc_layer_1_t *layer)
 {
     int w = WIDTH(layer->sourceCrop);
     int h = HEIGHT(layer->sourceCrop);
@@ -394,7 +394,7 @@ static float getscalew(hwc_layer_t *layer)
     return ((float)WIDTH(layer->displayFrame)) / (float)w;
 }
 
-static float getscaleh(hwc_layer_t *layer)
+static float getscaleh(hwc_layer_1_t *layer)
 {
     int w = WIDTH(layer->sourceCrop);
     int h = HEIGHT(layer->sourceCrop);
@@ -456,7 +456,7 @@ static int rgz_bunique(int *a, int len)
     return unique;
 }
 
-static int rgz_hwc_layer_sortbyy(hwc_layer_t *ra, int rsz, int *out, int *width)
+static int rgz_hwc_layer_sortbyy(hwc_layer_1_t *ra, int rsz, int *out, int *width)
 {
     int outsz = 0;
     int i;
@@ -522,7 +522,7 @@ static void rgz_gen_blitregions(blit_hregion_t *hregion)
     }
 }
 
-static int rgz_hwc_scaled(hwc_layer_t *layer)
+static int rgz_hwc_scaled(hwc_layer_1_t *layer)
 {
     int w = WIDTH(layer->sourceCrop);
     int h = HEIGHT(layer->sourceCrop);
@@ -533,7 +533,7 @@ static int rgz_hwc_scaled(hwc_layer_t *layer)
     return WIDTH(layer->displayFrame) != w || HEIGHT(layer->displayFrame) != h;
 }
 
-static int rgz_in_valid_hwc_layer(hwc_layer_t *layer)
+static int rgz_in_valid_hwc_layer(hwc_layer_1_t *layer)
 {
     IMG_native_handle_t *handle = (IMG_native_handle_t *)layer->handle;
     if ((layer->flags & HWC_SKIP_LAYER) || !handle)
@@ -557,7 +557,7 @@ static int rgz_in_valid_hwc_layer(hwc_layer_t *layer)
 
 static int rgz_in_hwccheck(rgz_in_params_t *p, rgz_t *rgz)
 {
-    hwc_layer_t *layers = p->data.hwc.layers;
+    hwc_layer_1_t *layers = p->data.hwc.layers;
     int layerno = p->data.hwc.layerno;
 
     if (!layers)
@@ -613,7 +613,7 @@ static int rgz_in_hwc(rgz_in_params_t *p, rgz_t *rgz)
     }
 
     /* Find the horizontal regions */
-    hwc_layer_t *layers = p->data.hwc.layers;
+    hwc_layer_1_t *layers = p->data.hwc.layers;
     int ylen = rgz_hwc_layer_sortbyy(layers, layerno, yentries, &dispw);
 
     ylen = rgz_bunique(yentries, ylen);
@@ -662,7 +662,7 @@ static int rgz_in_hwc(rgz_in_params_t *p, rgz_t *rgz)
  * dright, dbot, rot, flip, blending, scalew, scaleh, visrects
  *
  */
-static void rgz_print_layer(hwc_layer_t *l, int idx, int csv)
+static void rgz_print_layer(hwc_layer_1_t *l, int idx, int csv)
 {
     char big_log[1024];
     int e = sizeof(big_log);
@@ -760,11 +760,11 @@ static void rgz_print_layer(hwc_layer_t *l, int idx, int csv)
     }
 }
 
-static void rgz_print_layers(hwc_layer_list_t* list, int csv)
+static void rgz_print_layers(hwc_display_contents_1_t* list, int csv)
 {
     size_t i;
     for (i = 0; i < list->numHwLayers; i++) {
-        hwc_layer_t *l = &list->hwLayers[i];
+        hwc_layer_1_t *l = &list->hwLayers[i];
         rgz_print_layer(l, i, csv);
     }
 }
@@ -851,7 +851,7 @@ static int rgz_handle_to_stride(IMG_native_handle_t *h)
 extern void BVDump(const char* prefix, const char* tab, const struct bvbltparams* parms);
 
 static int rgz_hwc_layer_blit(
-    hwc_layer_t *l, struct bvbuffdesc *scrdesc,
+    hwc_layer_1_t *l, struct bvbuffdesc *scrdesc,
     struct bvsurfgeom *scrgeom, int noblend, int buff_idx)
 {
     IMG_native_handle_t *handle = (IMG_native_handle_t *)l->handle;
@@ -955,14 +955,14 @@ static int rgz_hwc_layer_blit(
  * Calculate the left coord of the source on the basis of the location of the
  * blit subregion relative to the HWC layer display frame
  */
-static int effective_srcleft(hwc_layer_t* l, blit_rect_t *rect)
+static int effective_srcleft(hwc_layer_1_t* l, blit_rect_t *rect)
 {
     // Assert rect->left >= l->sourceCrop.left
     // Assert rect->left < l->sourceCrop.left + WIDTH(l->sourceCrop)
     return l->sourceCrop.left + ((WIDTH(l->sourceCrop) * (rect->left - l->displayFrame.left)) / WIDTH(l->displayFrame));
 }
 
-static int effective_srctop(hwc_layer_t* l, blit_rect_t *rect)
+static int effective_srctop(hwc_layer_1_t* l, blit_rect_t *rect)
 {
     // Assert rect->top >= l->sourceCrop.top
     // Assert rect->top < l->sourceCrop.top + HEIGHT(l->sourceCrop)
@@ -998,7 +998,7 @@ static void rgz_src2blend_prep2(
 }
 
 static void rgz_src2blend_prep(
-    struct rgz_blt_entry* e, hwc_layer_t *l, blit_rect_t *rect)
+    struct rgz_blt_entry* e, hwc_layer_1_t *l, blit_rect_t *rect)
 {
     IMG_native_handle_t *handle = (IMG_native_handle_t *)l->handle;
 
@@ -1031,7 +1031,7 @@ static void rgz_src2blend_prep(
 }
 
 static void rgz_src1_prep(
-    struct rgz_blt_entry* e, hwc_layer_t *l,
+    struct rgz_blt_entry* e, hwc_layer_1_t *l,
     blit_rect_t *rect,
     struct bvbuffdesc *scrdesc, struct bvsurfgeom *scrgeom)
 {
@@ -1126,7 +1126,7 @@ static int rgz_hwc_subregion_blit(
         while((lix = get_layer_ops_next(hregion, sidx, lix)) != -1) {
             int batchflags = 0;
             e = rgz_blts_get(&blts);
-            hwc_layer_t *layer = hregion->layers[lix];
+            hwc_layer_1_t *layer = hregion->layers[lix];
             rgz_src1_prep(e, layer, rect, scrdesc, scrgeom);
             rgz_src2blend_prep2(e, layer->transform, rect, scrdesc, scrgeom);
             if (first) {
@@ -1149,7 +1149,7 @@ static int rgz_hwc_subregion_blit(
             lix = get_top_rect(hregion, sidx, &rect);
 
         struct rgz_blt_entry* e = rgz_blts_get(&blts);
-        hwc_layer_t *l = hregion->layers[lix];
+        hwc_layer_1_t *l = hregion->layers[lix];
 
         rgz_src1_prep(e, l, rect, scrdesc, scrgeom);
 
@@ -1262,7 +1262,7 @@ static int rgz_out_region(rgz_t *rgz, rgz_out_params_t *params, int bvdirect)
     return rv;
 }
 
-void rgz_profile_hwc(hwc_layer_list_t* list, int dispw, int disph)
+void rgz_profile_hwc(hwc_display_contents_1_t* list, int dispw, int disph)
 {
     if (!list)  /* A NULL composition list can occur */
         return;
