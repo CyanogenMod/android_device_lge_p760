@@ -1,0 +1,66 @@
+# TI changes for FM application
+/dev/tihci                0666   root       root
+
+# LGE_SPECIFIC
+/dev/apds_9900            0666   system     system
+
+/dev/pvrsrvkm             0666   system     system
+/dev/video0               0660   system     camera
+/dev/video1               0660   system     camera
+/dev/video2               0660   system     camera
+/dev/s3c-jpg              0660   system     camera
+/dev/s3c-mem              0660   system     system
+/dev/s3c-mfc              0660   system     graphics
+
+/dev/modem_ctl            0660   radio      radio
+/dev/modem_fmt            0660   radio      radio
+/dev/modem_rfs            0660   radio      radio
+/dev/s3c2410_serial3      0660   radio      radio
+/dev/block/mtdblock5      0660   radio      radio
+/dev/mtd/mtd5ro           0660   radio      radio
+
+# for Sensor HAL
+/dev/akm8973              0660   system     system
+/dev/accelerometer        0660   system     system
+/dev/mpu                  0660   system     system
+/dev/mpuirq               0660   system     system
+/dev/accelirq             0660   system     system
+/dev/compassirq           0660   system     system
+/dev/timerirq             0660   system     system
+
+# for GPS
+/dev/s3c2410_serial1      0600   gps        gps
+
+# for HWC
+/dev/dsscomp              0660   system     system
+/dev/tiler                0666   system     system
+
+#for GCX
+/dev/gcioctl              0666   system     system
+
+# ART, ETA2 : root -> system
+/dev/graphics/*           0660   system     graphics
+/dev/input/*              0660   system     input
+/dev/ttyGS1           	0660   system       root
+
+# for SYSLINK
+/dev/rpmsg-omx0           0660   drmrpc    drmrpc
+/dev/rpmsg-omx1           0660   drmrpc    drmrpc
+/dev/rproc_user           0660   drmrpc    drmrpc
+/dev/tf_driver            0660   radio     drmrpc
+
+# Immersion (Vibrator)
+/dev/tspdrv               0666   root       root
+
+# RIL Platform (for IPC Interface)
+/dev/xmd-tty*            0660   radio      radio
+
+# LGE_BROADCAST_TDMB
+/dev/broadcast0           0660  media        media
+/dev/graphics/fb0         0666  root         graphics
+
+# set permission nv and misc for CTS Pass
+/dev/block/mmcblk0p6 0660 system media_rw
+/dev/block/mmcblk0p7 0660 system media_rw
+/dev/rfkill               0660   wifi       wifi
+/dev/pn544	0600	nfc	nfc
