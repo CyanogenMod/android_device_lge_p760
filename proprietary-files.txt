@@ -5,7 +5,6 @@ etc/firmware/fw_bcmdhd_p2p.bin
 etc/firmware/BCM4330B1_002.001.003.0550.0000_TESTONLY_LGE_X3.hcd
 lib/libril.so
 lib/hw/audio.primary.omap4.so
-lib/hw/audio_policy.default.so
 lib/hw/gps.omap4.so
 lib/hw/sensors.omap4.so
 lib/hw/camera.omap4.so

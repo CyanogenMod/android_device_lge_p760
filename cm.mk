@@ -22,3 +22,6 @@ PRODUCT_BUILD_PROP_OVERRIDES += PRODUCT_NAME=u2_open_eu BUILD_FINGERPRINT=lge/u2
 ## Device identifier. This must come after all inclusions
 PRODUCT_DEVICE := p760
 
+# Enable Torch
+PRODUCT_PACKAGES += Torch WiFiDirectDemo
+

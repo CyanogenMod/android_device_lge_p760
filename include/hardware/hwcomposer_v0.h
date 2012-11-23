@@ -14,37 +14,16 @@
  * limitations under the License.
  */
 
+/* This header contains deprecated HWCv0 interface declarations. Don't include
+ * this header directly; it will be included by <hardware/hwcomposer.h> unless
+ * HWC_REMOVE_DEPRECATED_VERSIONS is defined to non-zero.
+ */
 #ifndef ANDROID_INCLUDE_HARDWARE_HWCOMPOSER_H
-#define ANDROID_INCLUDE_HARDWARE_HWCOMPOSER_H
+#error "This header should only be included by hardware/hwcomposer.h"
+#endif
 
-#include <stdint.h>
-#include <sys/cdefs.h>
-
-#include <hardware/gralloc.h>
-#include <hardware/hardware.h>
-#include <cutils/native_handle.h>
-
-#include <hardware/hwcomposer_defs.h>
-
-__BEGIN_DECLS
-
-/*****************************************************************************/
-
-// for compatibility
-#define HWC_MODULE_API_VERSION      HWC_MODULE_API_VERSION_0_1
-#define HWC_DEVICE_API_VERSION      HWC_DEVICE_API_VERSION_0_1
-#define HWC_API_VERSION             HWC_DEVICE_API_VERSION
-
-/**
- * The id of this module
- */
-#define HWC_HARDWARE_MODULE_ID "hwcomposer"
-
-/**
- * Name of the sensors device to open
- */
-#define HWC_HARDWARE_COMPOSER   "composer"
-
+#ifndef ANDROID_INCLUDE_HARDWARE_HWCOMPOSER_V0_H
+#define ANDROID_INCLUDE_HARDWARE_HWCOMPOSER_V0_H
 
 struct hwc_composer_device;
 
@@ -62,7 +41,7 @@ typedef struct hwc_methods {
      *************************************************************************/
 
     /*
-     * eventControl(..., event, value)
+     * eventControl(..., event, enabled)
      * Enables or disables h/w composer events.
      *
      * eventControl can be called from any thread and takes effect
@@ -70,37 +49,15 @@ typedef struct hwc_methods {
      *
      *  Supported events are:
      *      HWC_EVENT_VSYNC
-     *      HWC_EVENT_ORIENTATION
      *
      * returns -EINVAL if the "event" parameter is not one of the value above
-     * or if the "value" parameter is not 0 or 1 for HWC_EVENT_VSYNC.
-     * and if the "value" parameter is not going to be just 0 or 1 for
-     * HWC_EVENT_ORIENTATION
+     * or if the "enabled" parameter is not 0 or 1.
      */
 
     int (*eventControl)(
-            struct hwc_composer_device* dev, int event, int value);
+            struct hwc_composer_device* dev, int event, int enabled);
 
 } hwc_methods_t;
-
-typedef struct hwc_rect {
-    int left;
-    int top;
-    int right;
-    int bottom;
-} hwc_rect_t;
-
-typedef struct hwc_region {
-    size_t numRects;
-    hwc_rect_t const* rects;
-} hwc_region_t;
-
-typedef struct hwc_color {
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-    uint8_t a;
-} hwc_color_t;
 
 typedef struct hwc_layer {
     /*
@@ -143,11 +100,6 @@ typedef struct hwc_layer {
             /* transformation to apply to the buffer during composition */
             uint32_t transform;
 
-#ifdef QCOM_HARDWARE
-            /* source transform of the buffer */
-            uint32_t sourceTransform;
-#endif
-
             /* blending to apply during composition */
             int32_t blending;
 
@@ -175,18 +127,6 @@ typedef struct hwc_layer {
     };
 } hwc_layer_t;
 
-
-/*
- * hwc_layer_list_t::flags values
- */
-enum {
-    /*
-     * HWC_GEOMETRY_CHANGED is set by SurfaceFlinger to indicate that the list
-     * passed to (*prepare)() has changed by more than just the buffer handles.
-     */
-    HWC_GEOMETRY_CHANGED = 0x00000001,
-};
-
 /*
  * List of layers.
  * The handle members of hwLayers elements must be unique.
@@ -197,59 +137,7 @@ typedef struct hwc_layer_list {
     hwc_layer_t hwLayers[0];
 } hwc_layer_list_t;
 
-/* This represents a display, typically an EGLDisplay object */
-typedef void* hwc_display_t;
-
-/* This represents a surface, typically an EGLSurface object  */
-typedef void* hwc_surface_t;
-
-
-/* see hwc_composer_device::registerProcs()
- * Any of the callbacks can be NULL, in which case the corresponding
- * functionality is not supported.
- */
-typedef struct hwc_procs {
-    /*
-     * (*invalidate)() triggers a screen refresh, in particular prepare and set
-     * will be called shortly after this call is made. Note that there is
-     * NO GUARANTEE that the screen refresh will happen after invalidate()
-     * returns (in particular, it could happen before).
-     * invalidate() is GUARANTEED TO NOT CALL BACK into the h/w composer HAL and
-     * it is safe to call invalidate() from any of hwc_composer_device
-     * hooks, unless noted otherwise.
-     */
-    void (*invalidate)(struct hwc_procs* procs);
-
-    /*
-     * (*vsync)() is called by the h/w composer HAL when a vsync event is
-     * received and HWC_EVENT_VSYNC is enabled (see: hwc_event_control).
-     *
-     * the "zero" parameter must always be 0.
-     * the "timestamp" parameter is the system monotonic clock timestamp in
-     *   nanosecond of when the vsync event happened.
-     *
-     * vsync() is GUARANTEED TO NOT CALL BACK into the h/w composer HAL.
-     *
-     * It is expected that vsync() is called from a thread of at least
-     * HAL_PRIORITY_URGENT_DISPLAY with as little latency as possible,
-     * typically less than 0.5 ms.
-     *
-     * It is a (silent) error to have HWC_EVENT_VSYNC enabled when calling
-     * hwc_composer_device.set(..., 0, 0, 0) (screen off). The implementation
-     * can either stop or continue to process VSYNC events, but must not
-     * crash or cause other problems.
-     *
-     */
-    void (*vsync)(struct hwc_procs* procs, int zero, int64_t timestamp);
-} hwc_procs_t;
-
-
 /*****************************************************************************/
-
-typedef struct hwc_module {
-    struct hw_module_t common;
-} hwc_module_t;
-
 
 typedef struct hwc_composer_device {
     struct hw_device_t common;
@@ -385,9 +273,6 @@ static inline int hwc_close(hwc_composer_device_t* device) {
     return device->common.close(&device->common);
 }
 
-
 /*****************************************************************************/
 
-__END_DECLS
-
-#endif /* ANDROID_INCLUDE_HARDWARE_HWCOMPOSER_H */
+#endif /* ANDROID_INCLUDE_HARDWARE_HWCOMPOSER_V0_H */

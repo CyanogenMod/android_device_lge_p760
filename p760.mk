@@ -16,6 +16,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/init.p760.usb.rc:root/init.p760.usb.rc \
     $(LOCAL_PATH)/init.lgep760board.rc:root/init.lgep760board.rc \
     $(LOCAL_PATH)/ueventd.lgep760board.rc:root/ueventd.lgep760board.rc \
+    $(LOCAL_PATH)/fstab.u2:root/fstab.u2 \
     $(LOCAL_PATH)/vold.fstab:system/etc/vold.fstab
 
 PRODUCT_COPY_FILES += \
@@ -27,7 +28,8 @@ PRODUCT_COPY_FILES += \
 # stagefright confs
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/media_profiles.xml:system/etc/media_profiles.xml \
-    $(LOCAL_PATH)/configs/media_codecs.xml:system/etc/media_codecs.xml
+    $(LOCAL_PATH)/configs/media_codecs.xml:system/etc/media_codecs.xml \
+    $(LOCAL_PATH)/configs/audio_policy.conf:system/etc/audio_policy.conf
 
 # wifi nvram calibration
 PRODUCT_COPY_FILES += \
@@ -130,9 +132,6 @@ FRAMEWORKS_BASE_SUBDIRS += \
 PRODUCT_PACKAGES += \
     libskiahwdec \
     libskiahwenc
-
-## Radio fixes
-FRAMEWORKS_BASE_SUBDIRS += ../../$(LOCAL_PATH)/ril/
 
 #copy firmware
 PRODUCT_COPY_FILES += \
