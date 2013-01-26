@@ -44,3 +44,5 @@ lge.nfc.fwpatchv13=yes
 lge.nfc.indicator=yes
 lge.nfc.defaultonoff=on
 
+## Bluetooth address
+ro.bt.bdaddr_path=/sys/devices/platform/bd_address/bdaddr_if

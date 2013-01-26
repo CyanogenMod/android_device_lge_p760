@@ -89,3 +89,5 @@ TARGET_KERNEL_MODULES := KERNEL_SGX_MODULES
 
 ## Radio fixes
 BOARD_RIL_CLASS := ../../../device/lge/p760/ril/
+
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/lge/p760/bluetooth
