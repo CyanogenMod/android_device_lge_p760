@@ -1374,9 +1374,6 @@ static size_t get_input_buffer_size(uint32_t sample_rate, int format, int channe
 
     LOGFUNC("%s(%d, %d, %d)", __FUNCTION__, sample_rate, format, channel_count);
 
-    if (check_input_parameters(sample_rate, format, channel_count) != 0)
-        return 0;
-
     /* take resampling into account and return the closest majoring
     multiple of 16 frames, as audioflinger expects audio buffers to
     be a multiple of 16 frames */
@@ -2764,12 +2761,8 @@ static size_t adev_get_input_buffer_size(const struct audio_hw_device *dev,
 {
     size_t size;
     int channel_count = popcount(config->channel_mask);
-    LOGFUNC("%s(%p, %d, %d, %d)", __FUNCTION__, dev, sample_rate,
-                                format, channel_count);
-
-    if (check_input_parameters(config->sample_rate, config->format, channel_count) != 0) {
-        return 0;
-    }
+    LOGFUNC("%s(%p, %d, %d, %d)", __FUNCTION__, dev, config->sample_rate,
+            config->format, channel_count);
 
     return get_input_buffer_size(config->sample_rate, config->format, channel_count);
 }
