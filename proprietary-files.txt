@@ -4,7 +4,7 @@ etc/firmware/fw_bcmdhd_apsta.bin
 etc/firmware/fw_bcmdhd_p2p.bin
 etc/firmware/BCM4330B1_002.001.003.0550.0000_TESTONLY_LGE_X3.hcd
 lib/libril.so
-lib/hw/audio.primary.omap4.so
+#lib/hw/audio.primary.omap4.so
 lib/hw/gps.omap4.so
 lib/hw/sensors.omap4.so
 lib/hw/camera.omap4.so
@@ -13,7 +13,7 @@ lib/libini.so
 lib/lge-ril.so
 lib/libhdcp.so
 lib/liblgehdmi.so
-lib/libtinyalsa.so
+#lib/libtinyalsa.so
 vendor/firmware/ducati-m3.bin
 vendor/firmware/libpn544_fw.so
 vendor/lib/drm/libdrmwvmplugin.so
