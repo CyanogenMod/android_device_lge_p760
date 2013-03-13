@@ -1,0 +1,7 @@
+[
+ {
+   "repository": "lge-kernel-omap4",
+   "target_path": "kernel/lge/omap4-common",
+   "branch": "android-omap-3.0"
+ }
+]
