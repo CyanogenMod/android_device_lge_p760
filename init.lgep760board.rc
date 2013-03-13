@@ -367,3 +367,9 @@ on property:dev.bootcomplete=1
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
     write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 20000
     write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 20000
+
+service charger /charger
+    class charger
+    user root
+    group root
+    oneshot

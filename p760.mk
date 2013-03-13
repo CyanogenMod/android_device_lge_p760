@@ -144,6 +144,11 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
   system/bluetooth/data/main.conf:system/etc/bluetooth/main.conf
 
+# Charger mode
+PRODUCT_PACKAGES += \
+    charger \
+    charger_res_images
+
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
 PRODUCT_NAME := full_p760
 PRODUCT_DEVICE := p760
