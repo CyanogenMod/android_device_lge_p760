@@ -295,7 +295,7 @@ struct route_setting defaults[] = {
     },
     {
         .ctl_name = MIXER_EARPHONE_PLAYBACK_VOLUME,
-        .intval = DB_TO_EARPIECE_VOLUME(6),
+        .intval = 0,//DB_TO_EARPIECE_VOLUME(6),
     },
     {
         .ctl_name = MIXER_AUDUL_VOICE_UL_VOLUME,
@@ -307,7 +307,7 @@ struct route_setting defaults[] = {
     },
     {
         .ctl_name = MIXER_CAPTURE_VOLUME,
-        .intval = DB_TO_CAPTURE_VOLUME(24),
+        .intval = DB_TO_CAPTURE_VOLUME(18),
     },
     {
         .ctl_name = MIXER_SDT_UL_VOLUME,
