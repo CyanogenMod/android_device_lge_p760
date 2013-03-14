@@ -46,3 +46,5 @@ lge.nfc.defaultonoff=on
 
 ## Bluetooth address
 ro.bt.bdaddr_path=/sys/devices/platform/bd_address/bdaddr_if
+
+persist.sys.usb.config=mtp,adb
