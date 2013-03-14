@@ -58,6 +58,32 @@ public class U2RIL extends RIL implements CommandsInterface {
 
     @Override
     public void
+    dial(String address, int clirMode, UUSInfo uusInfo, Message result) {
+        super.dial(address, clirMode, uusInfo, result);
+
+        // RIL_REQUEST_LGE_CPATH
+        RILRequest rrLSL = RILRequest.obtain(
+                0x12a, null);
+        rrLSL.mp.writeInt(1);
+        rrLSL.mp.writeInt(1);
+        send(rrLSL);
+    }
+
+    public void
+    acceptCall (Message result) {
+        super.acceptCall(result);
+
+        // RIL_REQUEST_LGE_CPATH
+        RILRequest rrLSL = RILRequest.obtain(
+                0x12a, null);
+        rrLSL.mp.writeInt(1);
+        rrLSL.mp.writeInt(1);
+        send(rrLSL);
+    }
+
+
+    @Override
+    public void
     getIMEI(Message result) {
         //RIL_REQUEST_LGE_SEND_COMMAND
         // Use this to bootstrap a bunch of internal variables
@@ -67,12 +93,6 @@ public class U2RIL extends RIL implements CommandsInterface {
         rrLSC.mp.writeInt(0);
         send(rrLSC);
 
-        // RIL_REQUEST_LGE_CPATH
-        RILRequest rrLSL = RILRequest.obtain(
-                0x12a, null);
-        rrLSL.mp.writeInt(1);
-        rrLSL.mp.writeInt(1);
-        send(rrLSL);
 
         // The original (and unmodified) IMEI request
         RILRequest rr = RILRequest.obtain(RIL_REQUEST_GET_IMEI, result);
