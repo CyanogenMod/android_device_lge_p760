@@ -263,7 +263,7 @@ struct route_setting defaults[] = {
     },
     {
         .ctl_name = MIXER_DL2_RIGHT_EQUALIZER,
-        .strval = "High-pass -20dB",
+        .strval = MIXER_450HZ_HIGH_PASS,
     },
     {
         .ctl_name = MIXER_DL1_EQUALIZER,
@@ -279,11 +279,11 @@ struct route_setting defaults[] = {
     },
     {
         .ctl_name = MIXER_DL2_MEDIA_PLAYBACK_VOLUME,
-        .intval = MIXER_ABE_GAIN_0DB + 5,
+        .intval = MIXER_ABE_GAIN_0DB - 5,
     },
     {
         .ctl_name = MIXER_DL1_VOICE_PLAYBACK_VOLUME,
-        .intval = MIXER_ABE_GAIN_0DB,
+        .intval = MIXER_ABE_GAIN_0DB - 20,
     },
     {
         .ctl_name = MIXER_DL2_VOICE_PLAYBACK_VOLUME,
@@ -295,7 +295,7 @@ struct route_setting defaults[] = {
     },
     {
         .ctl_name = MIXER_EARPHONE_PLAYBACK_VOLUME,
-        .intval = 0,//DB_TO_EARPIECE_VOLUME(6),
+        .intval = DB_TO_EARPIECE_VOLUME(0),
     },
     {
         .ctl_name = MIXER_AUDUL_VOICE_UL_VOLUME,
@@ -2692,7 +2692,7 @@ static int adev_set_voice_volume(struct audio_hw_device *dev, float volume)
                 ((adev->devices.out_devices & AUDIO_DEVICE_OUT_EARPIECE) ? 
                     MIXER_DL1_VOICE_PLAYBACK_VOLUME : 
                     MIXER_DL2_VOICE_PLAYBACK_VOLUME)), 0, 
-                 (MIXER_ABE_GAIN_0DB-15) + (30*volume));
+                 (MIXER_ABE_GAIN_0DB-40) + (30*volume));
 
     return 0;
 }
