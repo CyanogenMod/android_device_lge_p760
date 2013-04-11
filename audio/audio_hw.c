@@ -1227,9 +1227,10 @@ static void select_input_device(struct omap_audio_device *adev)
         if (!bt_on) {
             if ((adev->mode != AUDIO_MODE_IN_CALL) && (adev->active_input != 0)) {
                 /* sub mic is used for camcorder or VoIP on speaker phone */
-                sub_mic_on = (adev->active_input->source == AUDIO_SOURCE_CAMCORDER) ||
-                    ((adev->devices.out_devices & AUDIO_DEVICE_OUT_SPEAKER) &&
-                     (adev->active_input->source == AUDIO_SOURCE_VOICE_COMMUNICATION));
+                sub_mic_on = ((adev->active_input->source == AUDIO_SOURCE_CAMCORDER) &&
+                        !(adev->devices.in_devices & AUDIO_DEVICE_IN_WIRED_HEADSET)) ||
+                        ((adev->devices.out_devices & AUDIO_DEVICE_OUT_SPEAKER) &&
+                        (adev->active_input->source == AUDIO_SOURCE_VOICE_COMMUNICATION));
             }
             if (!sub_mic_on) {
                 headset_on = adev->devices.in_devices & AUDIO_DEVICE_IN_WIRED_HEADSET;
