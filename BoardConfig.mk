@@ -91,3 +91,6 @@ TARGET_KERNEL_MODULES := KERNEL_SGX_MODULES
 BOARD_RIL_CLASS := ../../../device/lge/p760/ril/
 
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/lge/p760/bluetooth
+
+BOARD_CUSTOM_GRAPHICS := ../../../device/lge/p760/recovery-gfx.c
+BOARD_CHARGER_ENABLE_SUSPEND := true
