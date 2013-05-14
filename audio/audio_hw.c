@@ -1802,14 +1802,14 @@ static int out_get_render_position(const struct audio_stream_out *stream,
 
 static int out_add_audio_effect(const struct audio_stream *stream, effect_handle_t effect)
 {
-    LOGFUNC("%s(%p, %p)", __FUNCTION__, stream, effect);
+    ALOGV("%s(%p, %p)", __FUNCTION__, stream, effect);
 
     return 0;
 }
 
 static int out_remove_audio_effect(const struct audio_stream *stream, effect_handle_t effect)
 {
-    LOGFUNC("%s(%p, %p)", __FUNCTION__, stream, effect);
+    ALOGV("%s(%p, %p)", __FUNCTION__, stream, effect);
 
     return 0;
 }
@@ -2135,7 +2135,7 @@ static int set_preprocessor_param(effect_handle_t handle,
     uint32_t psize = ((param->psize - 1) / sizeof(int) + 1) * sizeof(int) +
                         param->vsize;
 
-    LOGFUNC("%s(%p, %p)", __FUNCTION__, handle, param);
+    ALOGV("%s(%p, %p)", __FUNCTION__, handle, param);
 
     int status = (*handle)->command(handle,
                                    EFFECT_CMD_SET_PARAM,
@@ -2155,7 +2155,7 @@ static int set_preprocessor_echo_delay(effect_handle_t handle,
     uint32_t buf[sizeof(effect_param_t) / sizeof(uint32_t) + 2];
     effect_param_t *param = (effect_param_t *)buf;
 
-    LOGFUNC("%s(%p, %d)", __FUNCTION__, handle, delay_us);
+    ALOGV("%s(%p, %d)", __FUNCTION__, handle, delay_us);
 
     param->psize = sizeof(uint32_t);
     param->vsize = sizeof(uint32_t);
@@ -2445,7 +2445,7 @@ static int in_add_audio_effect(const struct audio_stream *stream,
     int status;
     effect_descriptor_t desc;
 
-    LOGFUNC("%s(%p, %p)", __FUNCTION__, stream, effect);
+    ALOGV("%s(%p, %p)", __FUNCTION__, stream, effect);
 
     pthread_mutex_lock(&in->dev->lock);
     pthread_mutex_lock(&in->lock);
@@ -2481,7 +2481,7 @@ static int in_remove_audio_effect(const struct audio_stream *stream,
     bool found = false;
     effect_descriptor_t desc;
 
-    LOGFUNC("%s(%p, %p)", __FUNCTION__, stream, effect);
+    ALOGV("%s(%p, %p)", __FUNCTION__, stream, effect);
 
     pthread_mutex_lock(&in->dev->lock);
     pthread_mutex_lock(&in->lock);
