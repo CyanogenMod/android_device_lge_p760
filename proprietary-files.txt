@@ -24,7 +24,6 @@ vendor/lib/libwvm.so
 vendor/lib/libsrv_init_SGX540_120.so
 vendor/lib/libpvrANDROID_WSEGL_SGX540_120.so
 vendor/lib/libglslcompiler_SGX540_120.so
-vendor/lib/hw/hwcomposer.omap4.so
 vendor/lib/hw/gralloc.omap4.so
 vendor/lib/libpvr2d_SGX540_120.so
 vendor/lib/liblvvetx.so

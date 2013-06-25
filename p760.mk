@@ -77,7 +77,8 @@ PRODUCT_PACKAGES += \
     libaudioutils \
     audio.a2dp.default \
     audio_policy.default \
-    audio.primary.p760
+    audio.primary.p760 \
+    hwcomposer.p760
 
 PRODUCT_PACKAGES += \
     OMXCore \
