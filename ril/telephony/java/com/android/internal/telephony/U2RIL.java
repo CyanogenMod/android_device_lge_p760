@@ -65,7 +65,7 @@ public class U2RIL extends RIL implements CommandsInterface {
         RILRequest rrLSL = RILRequest.obtain(
                 0x12a, null);
         rrLSL.mp.writeInt(1);
-        rrLSL.mp.writeInt(1);
+        rrLSL.mp.writeInt(5);
         send(rrLSL);
     }
 
@@ -77,7 +77,7 @@ public class U2RIL extends RIL implements CommandsInterface {
         RILRequest rrLSL = RILRequest.obtain(
                 0x12a, null);
         rrLSL.mp.writeInt(1);
-        rrLSL.mp.writeInt(1);
+        rrLSL.mp.writeInt(5);
         send(rrLSL);
     }
 
