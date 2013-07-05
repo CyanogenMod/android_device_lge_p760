@@ -63,7 +63,7 @@ public class U2RIL extends RIL implements CommandsInterface {
 
         // RIL_REQUEST_LGE_CPATH
         RILRequest rrLSL = RILRequest.obtain(
-                0x12a, null);
+                0xfd, null);
         rrLSL.mp.writeInt(1);
         rrLSL.mp.writeInt(5);
         send(rrLSL);
@@ -75,7 +75,7 @@ public class U2RIL extends RIL implements CommandsInterface {
 
         // RIL_REQUEST_LGE_CPATH
         RILRequest rrLSL = RILRequest.obtain(
-                0x12a, null);
+                0xfd, null);
         rrLSL.mp.writeInt(1);
         rrLSL.mp.writeInt(5);
         send(rrLSL);
@@ -88,7 +88,7 @@ public class U2RIL extends RIL implements CommandsInterface {
         //RIL_REQUEST_LGE_SEND_COMMAND
         // Use this to bootstrap a bunch of internal variables
         RILRequest rrLSC = RILRequest.obtain(
-                0x142, null);
+                0x113, null);
         rrLSC.mp.writeInt(1);
         rrLSC.mp.writeInt(0);
         send(rrLSC);
@@ -139,12 +139,14 @@ public class U2RIL extends RIL implements CommandsInterface {
         int response = p.readInt();
 
         switch(response) {
+            case RIL_UNSOL_RESPONSE_RADIO_STATE_CHANGED: ret =  responseVoid(p); break;
             case RIL_UNSOL_ON_USSD: ret =  responseStrings(p); break;
             case RIL_UNSOL_LGE_XCALLSTAT: ret =  responseVoid(p); break;
             case RIL_UNSOL_LGE_SELECTED_SPEECH_CODEC: ret =  responseVoid(p); break;
             case RIL_UNSOL_LGE_BATTERY_LEVEL_UPDATE: ret =  responseVoid(p); break;
             case RIL_UNSOL_LGE_SIM_STATE_CHANGED:
             case RIL_UNSOL_LGE_SIM_STATE_CHANGED_NEW: ret =  responseVoid(p); break;
+
             default:
                 // Rewind the Parcel
                 p.setDataPosition(dataPosition);
@@ -154,6 +156,15 @@ public class U2RIL extends RIL implements CommandsInterface {
                 return;
         }
         switch(response) {
+            case RIL_UNSOL_RESPONSE_RADIO_STATE_CHANGED:
+                /* has bonus radio state int */
+                RadioState newState = getRadioStateFromInt(p.readInt());
+                p.setDataPosition(dataPosition);
+                super.processUnsolicited(p);
+                if (RadioState.RADIO_ON == newState) {
+                    setNetworkSelectionModeAutomatic(null);
+                }
+                return;
             case RIL_UNSOL_ON_USSD:
                 String[] resp = (String[])ret;
 
@@ -179,7 +190,7 @@ public class U2RIL extends RIL implements CommandsInterface {
                 break;
             case 1080: // RIL_UNSOL_LGE_FACTORY_READY (NG)
                 /* Adjust request IDs */
-                RIL_REQUEST_HANG_UP_CALL = 206;
+                RIL_REQUEST_HANG_UP_CALL = 0xb7;
                 break;
             case RIL_UNSOL_LGE_SIM_STATE_CHANGED:
             case RIL_UNSOL_LGE_SIM_STATE_CHANGED_NEW:
