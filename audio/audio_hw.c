@@ -279,7 +279,7 @@ struct route_setting defaults[] = {
     },
     {
         .ctl_name = MIXER_DL2_MEDIA_PLAYBACK_VOLUME,
-        .intval = MIXER_ABE_GAIN_0DB + 5,
+        .intval = MIXER_ABE_GAIN_0DB - 5,
     },
     {
         .ctl_name = MIXER_DL1_VOICE_PLAYBACK_VOLUME,
@@ -307,7 +307,7 @@ struct route_setting defaults[] = {
     },
     {
         .ctl_name = MIXER_CAPTURE_VOLUME,
-        .intval = DB_TO_CAPTURE_VOLUME(30),
+        .intval = DB_TO_CAPTURE_VOLUME(24),
     },
     {
         .ctl_name = MIXER_SDT_UL_VOLUME,
@@ -2666,11 +2666,15 @@ static int adev_set_voice_volume(struct audio_hw_device *dev, float volume)
     LOGFUNC("%s(%p, %f)", __FUNCTION__, dev, volume);
     adev->voice_volume = volume;
 
-    mixer_ctl_set_value(mixer_get_ctl_by_name(adev->mixer,
-                ((adev->devices.out_devices & AUDIO_DEVICE_OUT_EARPIECE) ? 
-                    MIXER_DL1_VOICE_PLAYBACK_VOLUME : 
-                    MIXER_DL2_VOICE_PLAYBACK_VOLUME)), 0, 
-                 (MIXER_ABE_GAIN_0DB-20) + (30*volume));
+    if (adev->devices.out_devices & AUDIO_DEVICE_OUT_EARPIECE) {
+        mixer_ctl_set_value(mixer_get_ctl_by_name(adev->mixer,
+                    MIXER_DL1_VOICE_PLAYBACK_VOLUME), 0,
+            (MIXER_ABE_GAIN_0DB-30) + (30*volume));
+    } else {
+        mixer_ctl_set_value(mixer_get_ctl_by_name(adev->mixer,
+                    MIXER_DL2_VOICE_PLAYBACK_VOLUME), 0,
+            (MIXER_ABE_GAIN_0DB-20) + (30*volume));
+    }
 
     return 0;
 }
