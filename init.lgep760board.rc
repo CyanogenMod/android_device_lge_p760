@@ -30,6 +30,9 @@ on fs
 # disable FUSE property value
     setprop ro.crypto.fuse_sdcard true
 
+    ## This needs to run ASAP to set up the framebuffer before zygote kicks in
+    start pvrsrvinit
+
 on post-fs-data
     mkdir /data/lgdrm 0770 lgdrm lgdrm_acc
     chown root system /data/dontpanic
@@ -275,7 +278,7 @@ on boot
 #LGE_CHANGE_E 20120720, hwansuk.kang@lge.com [data] Disable IPv6 for mobile network
 
 service pvrsrvinit /vendor/bin/pvrsrvinit
-    class core
+    disabled
     user root
     group root
     oneshot
