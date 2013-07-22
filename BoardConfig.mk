@@ -96,8 +96,6 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/lge/p760/bluetooth
 BOARD_CUSTOM_GRAPHICS := ../../../device/lge/p760/recovery-gfx.c
 BOARD_CHARGER_ENABLE_SUSPEND := true
 
-ifeq ($(HAVE_SELINUX),true)
-
 BOARD_SEPOLICY_DIRS := \
     device/lge/p760/selinux
 
@@ -106,5 +104,3 @@ BOARD_SEPOLICY_UNION := \
     pvrsrvinit.te \
     device.te \
     domain.te
-
-endif
