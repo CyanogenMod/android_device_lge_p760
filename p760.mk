@@ -16,8 +16,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/init.p760.usb.rc:root/init.p760.usb.rc \
     $(LOCAL_PATH)/init.lgep760board.rc:root/init.lgep760board.rc \
     $(LOCAL_PATH)/ueventd.lgep760board.rc:root/ueventd.lgep760board.rc \
-    $(LOCAL_PATH)/fstab.u2:root/fstab.u2 \
-    $(LOCAL_PATH)/vold.fstab:system/etc/vold.fstab
+    $(LOCAL_PATH)/fstab.u2:root/fstab.lgep760board
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf \

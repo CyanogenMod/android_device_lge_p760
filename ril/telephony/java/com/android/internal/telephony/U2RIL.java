@@ -94,8 +94,8 @@ public class U2RIL extends RIL implements CommandsInterface {
         // Use this to bootstrap a bunch of internal variables
         RILRequest rrLSC = RILRequest.obtain(
                 0x113, null);
-        rrLSC.mp.writeInt(1);
-        rrLSC.mp.writeInt(0);
+        rrLSC.mParcel.writeInt(1);
+        rrLSC.mParcel.writeInt(0);
         send(rrLSC);
 
 
@@ -188,8 +188,8 @@ public class U2RIL extends RIL implements CommandsInterface {
                 if (mCallPath >= 0) {
                     RILRequest rrLSL = RILRequest.obtain(
                             RIL_REQUEST_LGE_CPATH, null);
-                    rrLSL.mp.writeInt(1);
-                    rrLSL.mp.writeInt(mCallPath);
+                    rrLSL.mParcel.writeInt(1);
+                    rrLSL.mParcel.writeInt(mCallPath);
                     send(rrLSL);
                 }
 
@@ -264,8 +264,8 @@ public class U2RIL extends RIL implements CommandsInterface {
                     mCallPath = callPath;
                     RILRequest rrLSL = RILRequest.obtain(
                             RIL_REQUEST_LGE_CPATH, null);
-                    rrLSL.mp.writeInt(1);
-                    rrLSL.mp.writeInt(callPath);
+                    rrLSL.mParcel.writeInt(1);
+                    rrLSL.mParcel.writeInt(callPath);
                     send(rrLSL);
                 }
 
