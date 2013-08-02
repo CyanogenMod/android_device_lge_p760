@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/app_name">
+
+    <PreferenceCategory android:key="category_performance"
+        android:title="@string/category_performance_title">
+        <ListPreference
+            android:key="gpu_overclock"
+            android:title="@string/gpu_overclock_title"
+            android:entries="@array/gpu_overclock_entries"
+            android:entryValues="@array/gpu_overclock_values"
+            android:defaultValue="1" />
+    
+        <ListPreference
+            android:key="iva_overclock"
+            android:title="@string/iva_overclock_title"
+            android:entries="@array/iva_overclock_entries"
+            android:entryValues="@array/iva_overclock_values"
+            android:defaultValue="0" />
+
+        <ListPreference
+            android:key="max_sleep_frequency"
+            android:title="@string/max_sleep_frequency_title"
+            android:entries="@array/max_sleep_frequency_entries"
+            android:entryValues="@array/max_sleep_frequency_values"
+            android:defaultValue="0" />
+    
+    </PreferenceCategory>
+
+</PreferenceScreen>

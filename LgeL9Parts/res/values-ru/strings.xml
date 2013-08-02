@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Настройки LGE L9</string>
+
+    <string name="category_performance_title">Производительность</string>
+
+    <string name="gpu_overclock_title">Максимальная частота GPU</string>
+    <string name="iva_overclock_title">Максимальная частота IVA</string>
+    <string name="max_sleep_frequency_title">Максимальная частота при выкл. экране</string>
+
+</resources>
