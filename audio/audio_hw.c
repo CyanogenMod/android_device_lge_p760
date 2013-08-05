@@ -176,17 +176,17 @@
 
 /* use-case specific mic volumes, all in dB */
 #define CAPTURE_DIGITAL_MIC_VOLUME            26
-#define CAPTURE_MAIN_MIC_VOLUME               15
-#define CAPTURE_SUB_MIC_VOLUME                15
-#define CAPTURE_HEADSET_MIC_VOLUME            15
+#define CAPTURE_MAIN_MIC_VOLUME               28
+#define CAPTURE_SUB_MIC_VOLUME                28
+#define CAPTURE_HEADSET_MIC_VOLUME            20
 
-#define VOICE_RECOGNITION_MAIN_MIC_VOLUME     25
-#define VOICE_RECOGNITION_SUB_MIC_VOLUME      25
-#define VOICE_RECOGNITION_HEADSET_MIC_VOLUME  25
+#define VOICE_RECOGNITION_MAIN_MIC_VOLUME     28
+#define VOICE_RECOGNITION_SUB_MIC_VOLUME      28
+#define VOICE_RECOGNITION_HEADSET_MIC_VOLUME  20
 
-#define CAMCORDER_MAIN_MIC_VOLUME             15
-#define CAMCORDER_SUB_MIC_VOLUME              15
-#define CAMCORDER_HEADSET_MIC_VOLUME          15
+#define CAMCORDER_MAIN_MIC_VOLUME             30
+#define CAMCORDER_SUB_MIC_VOLUME              30
+#define CAMCORDER_HEADSET_MIC_VOLUME          20
 
 #define VOIP_MAIN_MIC_VOLUME                  15
 #define VOIP_SUB_MIC_VOLUME                   15
