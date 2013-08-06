@@ -275,11 +275,11 @@ struct route_setting defaults[] = {
     },
     {
         .ctl_name = MIXER_DL1_MEDIA_PLAYBACK_VOLUME,
-        .intval = MIXER_ABE_GAIN_0DB + 5,
+        .intval = MIXER_ABE_GAIN_0DB,
     },
     {
         .ctl_name = MIXER_DL2_MEDIA_PLAYBACK_VOLUME,
-        .intval = MIXER_ABE_GAIN_0DB - 3,
+        .intval = MIXER_ABE_GAIN_0DB,
     },
     {
         .ctl_name = MIXER_DL1_VOICE_PLAYBACK_VOLUME,
@@ -2673,13 +2673,20 @@ static int adev_set_voice_volume(struct audio_hw_device *dev, float volume)
     adev->voice_volume = volume;
 
     if (adev->devices.out_devices & AUDIO_DEVICE_OUT_EARPIECE) {
+// front speaker 
         mixer_ctl_set_value(mixer_get_ctl_by_name(adev->mixer,
                     MIXER_DL1_VOICE_PLAYBACK_VOLUME), 0,
-            (MIXER_ABE_GAIN_0DB-40) + (35*volume));
+            (MIXER_ABE_GAIN_0DB-40) + (40*volume));
+    } else if (adev->devices.out_devices & (AUDIO_DEVICE_OUT_WIRED_HEADSET|AUDIO_DEVICE_OUT_WIRED_HEADPHONE) ) {
+// wired headsets
+        mixer_ctl_set_value(mixer_get_ctl_by_name(adev->mixer,
+                    MIXER_DL1_VOICE_PLAYBACK_VOLUME), 0,
+            (MIXER_ABE_GAIN_0DB-35) + (40*volume));
     } else {
+// back speaker
         mixer_ctl_set_value(mixer_get_ctl_by_name(adev->mixer,
                     MIXER_DL2_VOICE_PLAYBACK_VOLUME), 0,
-            (MIXER_ABE_GAIN_0DB-20) + (30*volume));
+            (MIXER_ABE_GAIN_0DB-25) + (35*volume));
     }
 
     return 0;
