@@ -106,3 +106,5 @@ BOARD_SEPOLICY_UNION := \
     pvrsrvinit.te \
     device.te \
     domain.te
+
+BOARD_HARDWARE_CLASS := device/lge/p760/cmhw/
