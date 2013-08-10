@@ -60,4 +60,5 @@
         <item>7</item>
     </integer-array>
 
+    <integer name="config_deviceHardwareKeys">7</integer>
 </resources>
