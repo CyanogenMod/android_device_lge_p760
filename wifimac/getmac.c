@@ -30,6 +30,12 @@ int main() {
 	fd1 = open("/data/misc/wifi/macAddress",O_RDONLY);
 	fd2 = open("/data/misc/wifi/config",O_WRONLY|O_CREAT|O_TRUNC,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
 
+	write(fd2,"mpc=1\n",6);
+	write(fd2,"roam_off=0\n",11);
+	write(fd2,"roam_scan_period=10\n",20);
+	write(fd2,"roam_delta=20\n",14);
+	write(fd2,"roam_trigger=-70\n",17);
+	write(fd2,"PM=2\n",5);
 	write(fd2,"cur_etheraddr=",14);
 
 	for (i = 0; i<12; i++) {
