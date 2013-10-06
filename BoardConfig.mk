@@ -31,6 +31,7 @@ BOARD_HAS_NO_SELECT_BUTTON := true
 
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_BCM := true
+BOARD_BLUEDROID_VENDOR_CONF := device/lge/p760/bluetooth/vnd_lge_p760.txt
 
 BOARD_HAS_NO_MISC_PARTITION := true
 
@@ -92,6 +93,8 @@ TARGET_KERNEL_MODULES := KERNEL_SGX_MODULES
 BOARD_RIL_CLASS := ../../../device/lge/p760/ril/
 
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/lge/p760/bluetooth
+
+TARGET_USE_CUSTOM_LUN_FILE_PATH := /sys/class/android_usb/android0/f_mass_storage/lun%d/file
 
 BOARD_CUSTOM_GRAPHICS := ../../../device/lge/p760/recovery-gfx.c
 BOARD_CHARGER_ENABLE_SUSPEND := true
