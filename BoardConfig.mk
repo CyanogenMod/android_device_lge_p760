@@ -1,6 +1,4 @@
-USE_CAMERA_STUB := false
-BOARD_USES_TI_CAMERA_HAL := true
-
+USE_CAMERA_STUB := false 	
 # inherit from the proprietary version
 -include vendor/lge/p760/BoardConfigVendor.mk
 
@@ -37,12 +35,23 @@ BOARD_HAS_NO_MISC_PARTITION := true
 
 TARGET_RECOVERY_FSTAB = device/lge/p760/fstab.u2
 RECOVERY_FSTAB_VERSION = 2
+DEVICE_RESOLUTION=540x960
+TARGET_RECOVERY_PIXEL_FORMAT := "BGRA_8888"
+BOARD_RECOVERY_SWIPE := true
+BOARD_UMS_LUNFILE := "/sys/devices/virtual/android_usb/android0/f_mass_storage/lun%d/file"
 
 TARGET_BOOTLOADER_BOARD_NAME := p760
 
 BOARD_EGL_CFG := device/lge/p760/egl.cfg
+BOARD_EGL_WORKAROUND_BUG_10194508 := true
+
+TARGET_RUNNING_WITHOUT_SYNC_FRAMEWORK := true
 
 TARGET_USES_GL_VENDOR_EXTENSIONS := false
+
+COMMON_GLOBAL_CFLAGS += -DICS_CAMERA_BLOB
+COMMON_GLOBAL_CFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS
+COMMON_GLOBAL_CFLAGS += -DFORCE_SCREENSHOT_CPU_PATH
 
 # Wifi related defines
 BOARD_WPA_SUPPLICANT_DRIVER := NL80211
@@ -56,6 +65,7 @@ WIFI_DRIVER_FW_PATH_STA := "/system/etc/firmware/fw_bcmdhd_p2p.bin"
 WIFI_DRIVER_FW_PATH_P2P := "/system/etc/firmware/fw_bcmdhd_p2p.bin"
 WIFI_DRIVER_FW_PATH_AP := "/system/etc/firmware/fw_bcmdhd_apsta.bin"
 BOARD_LEGACY_NL80211_STA_EVENTS := true
+WIFI_BAND := 802_11_ABGN
 
 OMAP_ENHANCEMENT := true
 OMAP_ENHANCEMENT_CPCAM := true
@@ -79,8 +89,6 @@ USE_OPENGL_RENDERER := true
 TARGET_SPECIFIC_HEADER_PATH := device/lge/p760/include
 
 BOARD_HAS_VIBRATOR_IMPLEMENTATION := ../../device/lge/p760/vibrator.c
-
-COMMON_GLOBAL_CFLAGS += -DICS_CAMERA_BLOB
 
 
 KERNEL_SGX_MODULES:
