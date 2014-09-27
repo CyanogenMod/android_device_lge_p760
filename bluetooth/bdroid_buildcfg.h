@@ -19,4 +19,8 @@
 
 #define BTM_DEF_LOCAL_NAME   "LG Optimus L9"
 
+#define BLE_INCLUDED TRUE
+#define BTA_GATT_INCLUDED TRUE
+#define SMP_INCLUDED TRUE
+
 #endif
